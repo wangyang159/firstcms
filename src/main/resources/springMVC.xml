@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc
+	    http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+>
+	<!-- 扫描controller -->
+	<context:component-scan base-package="com.wy.controller"></context:component-scan>
+	
+	<context:property-placeholder location="classpath:path.properties"/>
+	
+	<!-- 启动前端注解驱动 -->
+	<mvc:annotation-driven />
+	
+	<!-- 禁止拦截静态资源 -->
+	<mvc:default-servlet-handler/>
+	
+	<!-- 视图解析图 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 配置前缀 -->
+		<property name="prefix" value="/WEB-INF/view/"></property>
+		<!-- 配置后缀 -->
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	
+	<!-- 上传支持 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 文件名的编码格式 -->
+     	<property name="defaultEncoding" value="UTF-8"/>
+     	<!--  上传文件的大小  10兆-->
+     	<property name="maxUploadSize" value="10485760"/>
+     	<!-- 单个文件上传的大小 -->
+     	<property name="maxUploadSizePerFile" value="1048576"/>
+	</bean>
+	
+	<!-- 配置拦截器 -->
+	<mvc:interceptors>
+		<!-- 1个人中心拦截器 -->
+		<mvc:interceptor>
+			<!-- 拦截规则 -->
+			<mvc:mapping path="/my/**" />
+			<!-- 不拦截规则 -->
+			<mvc:exclude-mapping path="/resource/**" />
+			<!-- 拦截器处理类 -->
+			<bean class="com.wy.utils.MyInterceptor" />
+		</mvc:interceptor>
+
+		<!-- 2管理员中心拦截器 -->
+		<mvc:interceptor>
+			<!-- 拦截规则 -->
+			<mvc:mapping path="/admin/**" />
+			<!-- 不拦截规则 -->
+			<mvc:exclude-mapping path="/resource/**" />
+			<!-- 拦截器处理类 -->
+			<bean class="com.wy.utils.AdminInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>
